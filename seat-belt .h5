@@ -1,0 +1,1060 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "d137a3e7",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-09-08T02:21:17.955388Z",
+     "iopub.status.busy": "2023-09-08T02:21:17.954549Z",
+     "iopub.status.idle": "2023-09-08T02:21:33.006831Z",
+     "shell.execute_reply": "2023-09-08T02:21:33.005148Z"
+    },
+    "papermill": {
+     "duration": 15.069986,
+     "end_time": "2023-09-08T02:21:33.009543",
+     "exception": false,
+     "start_time": "2023-09-08T02:21:17.939557",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Requirement already satisfied: tensorflow in /opt/conda/lib/python3.10/site-packages (2.12.0)\r\n",
+      "Requirement already satisfied: absl-py>=1.0.0 in /opt/conda/lib/python3.10/site-packages (from tensorflow) (1.4.0)\r\n",
+      "Requirement already satisfied: astunparse>=1.6.0 in /opt/conda/lib/python3.10/site-packages (from tensorflow) (1.6.3)\r\n",
+      "Requirement already satisfied: flatbuffers>=2.0 in /opt/conda/lib/python3.10/site-packages (from tensorflow) (23.5.26)\r\n",
+      "Requirement already satisfied: gast<=0.4.0,>=0.2.1 in /opt/conda/lib/python3.10/site-packages (from tensorflow) (0.4.0)\r\n",
+      "Requirement already satisfied: google-pasta>=0.1.1 in /opt/conda/lib/python3.10/site-packages (from tensorflow) (0.2.0)\r\n",
+      "Requirement already satisfied: grpcio<2.0,>=1.24.3 in /opt/conda/lib/python3.10/site-packages (from tensorflow) (1.51.3)\r\n",
+      "Requirement already satisfied: h5py>=2.9.0 in /opt/conda/lib/python3.10/site-packages (from tensorflow) (3.9.0)\r\n",
+      "Requirement already satisfied: jax>=0.3.15 in /opt/conda/lib/python3.10/site-packages (from tensorflow) (0.4.13)\r\n",
+      "Requirement already satisfied: keras<2.13,>=2.12.0 in /opt/conda/lib/python3.10/site-packages (from tensorflow) (2.12.0)\r\n",
+      "Requirement already satisfied: libclang>=13.0.0 in /opt/conda/lib/python3.10/site-packages (from tensorflow) (16.0.0)\r\n",
+      "Requirement already satisfied: numpy<1.24,>=1.22 in /opt/conda/lib/python3.10/site-packages (from tensorflow) (1.23.5)\r\n",
+      "Requirement already satisfied: opt-einsum>=2.3.2 in /opt/conda/lib/python3.10/site-packages (from tensorflow) (3.3.0)\r\n",
+      "Requirement already satisfied: packaging in /opt/conda/lib/python3.10/site-packages (from tensorflow) (21.3)\r\n",
+      "Requirement already satisfied: protobuf!=4.21.0,!=4.21.1,!=4.21.2,!=4.21.3,!=4.21.4,!=4.21.5,<5.0.0dev,>=3.20.3 in /opt/conda/lib/python3.10/site-packages (from tensorflow) (3.20.3)\r\n",
+      "Requirement already satisfied: setuptools in /opt/conda/lib/python3.10/site-packages (from tensorflow) (68.0.0)\r\n",
+      "Requirement already satisfied: six>=1.12.0 in /opt/conda/lib/python3.10/site-packages (from tensorflow) (1.16.0)\r\n",
+      "Requirement already satisfied: tensorboard<2.13,>=2.12 in /opt/conda/lib/python3.10/site-packages (from tensorflow) (2.12.3)\r\n",
+      "Requirement already satisfied: tensorflow-estimator<2.13,>=2.12.0 in /opt/conda/lib/python3.10/site-packages (from tensorflow) (2.12.0)\r\n",
+      "Requirement already satisfied: termcolor>=1.1.0 in /opt/conda/lib/python3.10/site-packages (from tensorflow) (2.3.0)\r\n",
+      "Requirement already satisfied: typing-extensions>=3.6.6 in /opt/conda/lib/python3.10/site-packages (from tensorflow) (4.6.3)\r\n",
+      "Requirement already satisfied: wrapt<1.15,>=1.11.0 in /opt/conda/lib/python3.10/site-packages (from tensorflow) (1.14.1)\r\n",
+      "Requirement already satisfied: tensorflow-io-gcs-filesystem>=0.23.1 in /opt/conda/lib/python3.10/site-packages (from tensorflow) (0.32.0)\r\n",
+      "Requirement already satisfied: wheel<1.0,>=0.23.0 in /opt/conda/lib/python3.10/site-packages (from astunparse>=1.6.0->tensorflow) (0.40.0)\r\n",
+      "Requirement already satisfied: ml-dtypes>=0.1.0 in /opt/conda/lib/python3.10/site-packages (from jax>=0.3.15->tensorflow) (0.2.0)\r\n",
+      "Requirement already satisfied: scipy>=1.7 in /opt/conda/lib/python3.10/site-packages (from jax>=0.3.15->tensorflow) (1.11.2)\r\n",
+      "Requirement already satisfied: google-auth<3,>=1.6.3 in /opt/conda/lib/python3.10/site-packages (from tensorboard<2.13,>=2.12->tensorflow) (2.20.0)\r\n",
+      "Requirement already satisfied: google-auth-oauthlib<1.1,>=0.5 in /opt/conda/lib/python3.10/site-packages (from tensorboard<2.13,>=2.12->tensorflow) (1.0.0)\r\n",
+      "Requirement already satisfied: markdown>=2.6.8 in /opt/conda/lib/python3.10/site-packages (from tensorboard<2.13,>=2.12->tensorflow) (3.4.3)\r\n",
+      "Requirement already satisfied: requests<3,>=2.21.0 in /opt/conda/lib/python3.10/site-packages (from tensorboard<2.13,>=2.12->tensorflow) (2.31.0)\r\n",
+      "Requirement already satisfied: tensorboard-data-server<0.8.0,>=0.7.0 in /opt/conda/lib/python3.10/site-packages (from tensorboard<2.13,>=2.12->tensorflow) (0.7.1)\r\n",
+      "Requirement already satisfied: werkzeug>=1.0.1 in /opt/conda/lib/python3.10/site-packages (from tensorboard<2.13,>=2.12->tensorflow) (2.3.7)\r\n",
+      "Requirement already satisfied: pyparsing!=3.0.5,>=2.0.2 in /opt/conda/lib/python3.10/site-packages (from packaging->tensorflow) (3.0.9)\r\n",
+      "Requirement already satisfied: cachetools<6.0,>=2.0.0 in /opt/conda/lib/python3.10/site-packages (from google-auth<3,>=1.6.3->tensorboard<2.13,>=2.12->tensorflow) (4.2.4)\r\n",
+      "Requirement already satisfied: pyasn1-modules>=0.2.1 in /opt/conda/lib/python3.10/site-packages (from google-auth<3,>=1.6.3->tensorboard<2.13,>=2.12->tensorflow) (0.2.7)\r\n",
+      "Requirement already satisfied: rsa<5,>=3.1.4 in /opt/conda/lib/python3.10/site-packages (from google-auth<3,>=1.6.3->tensorboard<2.13,>=2.12->tensorflow) (4.9)\r\n",
+      "Requirement already satisfied: urllib3<2.0 in /opt/conda/lib/python3.10/site-packages (from google-auth<3,>=1.6.3->tensorboard<2.13,>=2.12->tensorflow) (1.26.15)\r\n",
+      "Requirement already satisfied: requests-oauthlib>=0.7.0 in /opt/conda/lib/python3.10/site-packages (from google-auth-oauthlib<1.1,>=0.5->tensorboard<2.13,>=2.12->tensorflow) (1.3.1)\r\n",
+      "Requirement already satisfied: charset-normalizer<4,>=2 in /opt/conda/lib/python3.10/site-packages (from requests<3,>=2.21.0->tensorboard<2.13,>=2.12->tensorflow) (3.1.0)\r\n",
+      "Requirement already satisfied: idna<4,>=2.5 in /opt/conda/lib/python3.10/site-packages (from requests<3,>=2.21.0->tensorboard<2.13,>=2.12->tensorflow) (3.4)\r\n",
+      "Requirement already satisfied: certifi>=2017.4.17 in /opt/conda/lib/python3.10/site-packages (from requests<3,>=2.21.0->tensorboard<2.13,>=2.12->tensorflow) (2023.7.22)\r\n",
+      "Requirement already satisfied: MarkupSafe>=2.1.1 in /opt/conda/lib/python3.10/site-packages (from werkzeug>=1.0.1->tensorboard<2.13,>=2.12->tensorflow) (2.1.3)\r\n",
+      "Requirement already satisfied: pyasn1<0.5.0,>=0.4.6 in /opt/conda/lib/python3.10/site-packages (from pyasn1-modules>=0.2.1->google-auth<3,>=1.6.3->tensorboard<2.13,>=2.12->tensorflow) (0.4.8)\r\n",
+      "Requirement already satisfied: oauthlib>=3.0.0 in /opt/conda/lib/python3.10/site-packages (from requests-oauthlib>=0.7.0->google-auth-oauthlib<1.1,>=0.5->tensorboard<2.13,>=2.12->tensorflow) (3.2.2)\r\n",
+      "Note: you may need to restart the kernel to use updated packages.\n"
+     ]
+    }
+   ],
+   "source": [
+    "pip install tensorflow"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "9c0581aa",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-09-08T02:21:33.038927Z",
+     "iopub.status.busy": "2023-09-08T02:21:33.038490Z",
+     "iopub.status.idle": "2023-09-08T02:21:44.347446Z",
+     "shell.execute_reply": "2023-09-08T02:21:44.346079Z"
+    },
+    "papermill": {
+     "duration": 11.326769,
+     "end_time": "2023-09-08T02:21:44.350132",
+     "exception": false,
+     "start_time": "2023-09-08T02:21:33.023363",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "import pandas as pd\n",
+    "import numpy as np\n",
+    "import matplotlib.pyplot as plt\n",
+    "%matplotlib inline\n",
+    "import seaborn as sns\n",
+    "sns.set(style=\"whitegrid\")\n",
+    "import glob as gb\n",
+    "import cv2\n",
+    "%matplotlib inline\n",
+    "import seaborn as sns\n",
+    "sns.set(style=\"whitegrid\")\n",
+    "import glob as gb\n",
+    "import cv2\n",
+    "import os\n",
+    "import tensorflow as tf\n",
+    "from tensorflow.keras import layers \n",
+    "from tensorflow.keras.utils import to_categorical\n",
+    "from keras.models import Sequential, load_model\n",
+    "from keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, Dropout, BatchNormalization\n",
+    "from sklearn.preprocessing import LabelEncoder\n",
+    "from tensorflow.keras.utils import to_categorical\n",
+    "from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint\n",
+    "from keras.optimizers import Adam\n",
+    "from keras.preprocessing.image import ImageDataGenerator"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "6af2f9f8",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-09-08T02:21:44.378949Z",
+     "iopub.status.busy": "2023-09-08T02:21:44.378168Z",
+     "iopub.status.idle": "2023-09-08T02:21:45.262254Z",
+     "shell.execute_reply": "2023-09-08T02:21:45.260742Z"
+    },
+    "papermill": {
+     "duration": 0.9006,
+     "end_time": "2023-09-08T02:21:45.264326",
+     "exception": true,
+     "start_time": "2023-09-08T02:21:44.363726",
+     "status": "failed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "ename": "NameError",
+     "evalue": "name 'Mod' is not defined",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
+      "Cell \u001b[0;32mIn[3], line 1\u001b[0m\n\u001b[0;32m----> 1\u001b[0m \u001b[43mMod\u001b[49m\u001b[38;5;241m.\u001b[39mcompile(optimizer\u001b[38;5;241m=\u001b[39mAdam(learning_rate\u001b[38;5;241m=\u001b[39m\u001b[38;5;241m0.001\u001b[39m), loss\u001b[38;5;241m=\u001b[39m\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mbinary_crossentropy\u001b[39m\u001b[38;5;124m'\u001b[39m, metrics\u001b[38;5;241m=\u001b[39m[\u001b[38;5;124m'\u001b[39m\u001b[38;5;124maccuracy\u001b[39m\u001b[38;5;124m'\u001b[39m])\n",
+      "\u001b[0;31mNameError\u001b[0m: name 'Mod' is not defined"
+     ]
+    }
+   ],
+   "source": [
+    "Mod.compile(optimizer=Adam(learning_rate=0.001), loss='binary_crossentropy', metrics=['accuracy'])\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ccaa9db1",
+   "metadata": {
+    "papermill": {
+     "duration": null,
+     "end_time": null,
+     "exception": null,
+     "start_time": null,
+     "status": "pending"
+    },
+    "tags": []
+   },
+   "source": [
+    "# Load Data****"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "ec96376d",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-09-08T02:16:47.471513Z",
+     "iopub.status.busy": "2023-09-08T02:16:47.470878Z",
+     "iopub.status.idle": "2023-09-08T02:16:47.476249Z",
+     "shell.execute_reply": "2023-09-08T02:16:47.475238Z",
+     "shell.execute_reply.started": "2023-09-08T02:16:47.471476Z"
+    },
+    "papermill": {
+     "duration": null,
+     "end_time": null,
+     "exception": null,
+     "start_time": null,
+     "status": "pending"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "trainpath = '/kaggle/input/seat-belt2/Seat_Belt2/'\n",
+    "testpath  = '/kaggle/input/seat-belt2/Seat_Belt2/'\n",
+    "validationpath = '/kaggle/input/seat-belt2/Seat_Belt2/'"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "35c7b85f",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-09-08T02:16:47.478290Z",
+     "iopub.status.busy": "2023-09-08T02:16:47.477953Z",
+     "iopub.status.idle": "2023-09-08T02:16:47.530401Z",
+     "shell.execute_reply": "2023-09-08T02:16:47.529082Z",
+     "shell.execute_reply.started": "2023-09-08T02:16:47.478260Z"
+    },
+    "papermill": {
+     "duration": null,
+     "end_time": null,
+     "exception": null,
+     "start_time": null,
+     "status": "pending"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "for folder in  os.listdir(trainpath + 'Train') : \n",
+    "    files = gb.glob(pathname= str( trainpath +'Train//' + folder + '/*.jpg'))\n",
+    "    print(f'For training data , found {len(files)} in folder {folder}')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "d94b5f09",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-09-08T02:16:47.532201Z",
+     "iopub.status.busy": "2023-09-08T02:16:47.531861Z",
+     "iopub.status.idle": "2023-09-08T02:16:47.548720Z",
+     "shell.execute_reply": "2023-09-08T02:16:47.547388Z",
+     "shell.execute_reply.started": "2023-09-08T02:16:47.532173Z"
+    },
+    "papermill": {
+     "duration": null,
+     "end_time": null,
+     "exception": null,
+     "start_time": null,
+     "status": "pending"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "for folder in  os.listdir(trainpath + 'Test') : \n",
+    "    files = gb.glob(pathname= str( trainpath +'Test//' + folder + '/*.jpg'))\n",
+    "    print(f'For training data , found {len(files)} in folder {folder}')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "70f766c0",
+   "metadata": {
+    "papermill": {
+     "duration": null,
+     "end_time": null,
+     "exception": null,
+     "start_time": null,
+     "status": "pending"
+    },
+    "tags": []
+   },
+   "source": [
+    "# PreProcessing****"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "c4ccb57f",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-09-08T02:16:47.551167Z",
+     "iopub.status.busy": "2023-09-08T02:16:47.550536Z",
+     "iopub.status.idle": "2023-09-08T02:16:47.555849Z",
+     "shell.execute_reply": "2023-09-08T02:16:47.555088Z",
+     "shell.execute_reply.started": "2023-09-08T02:16:47.551135Z"
+    },
+    "papermill": {
+     "duration": null,
+     "end_time": null,
+     "exception": null,
+     "start_time": null,
+     "status": "pending"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "code = {'Seat_Belt':0 ,'WithoutSeat_Belt':1}\n",
+    "\n",
+    "def getcode(n) : \n",
+    "    for x , y in code.items() : \n",
+    "        if n == y : \n",
+    "            return x "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "e2fff946",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-09-08T02:16:47.557943Z",
+     "iopub.status.busy": "2023-09-08T02:16:47.557343Z",
+     "iopub.status.idle": "2023-09-08T02:17:21.728264Z",
+     "shell.execute_reply": "2023-09-08T02:17:21.725897Z",
+     "shell.execute_reply.started": "2023-09-08T02:16:47.557913Z"
+    },
+    "papermill": {
+     "duration": null,
+     "end_time": null,
+     "exception": null,
+     "start_time": null,
+     "status": "pending"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "size = []\n",
+    "for folder in  os.listdir(trainpath +'Train') : \n",
+    "    files = gb.glob(pathname= str( trainpath +'Train//' + folder + '/*.jpg'))\n",
+    "    for file in files: \n",
+    "        image = plt.imread(file)\n",
+    "        size.append(image.shape)\n",
+    "pd.Series(size).value_counts()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "bd32a11c",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-09-08T02:17:21.730042Z",
+     "iopub.status.busy": "2023-09-08T02:17:21.729613Z",
+     "iopub.status.idle": "2023-09-08T02:17:28.926011Z",
+     "shell.execute_reply": "2023-09-08T02:17:28.924845Z",
+     "shell.execute_reply.started": "2023-09-08T02:17:21.730012Z"
+    },
+    "papermill": {
+     "duration": null,
+     "end_time": null,
+     "exception": null,
+     "start_time": null,
+     "status": "pending"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "size = []\n",
+    "for folder in  os.listdir(trainpath +'Test') : \n",
+    "    files = gb.glob(pathname= str( trainpath +'Test//' + folder + '/*.jpg'))\n",
+    "    for file in files: \n",
+    "        image = plt.imread(file)\n",
+    "        size.append(image.shape)\n",
+    "pd.Series(size).value_counts()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "688ade2e",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-09-08T02:17:28.933395Z",
+     "iopub.status.busy": "2023-09-08T02:17:28.932596Z",
+     "iopub.status.idle": "2023-09-08T02:18:25.731474Z",
+     "shell.execute_reply": "2023-09-08T02:18:25.730244Z",
+     "shell.execute_reply.started": "2023-09-08T02:17:28.933340Z"
+    },
+    "papermill": {
+     "duration": null,
+     "end_time": null,
+     "exception": null,
+     "start_time": null,
+     "status": "pending"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "Size = 100\n",
+    "X_train = []\n",
+    "y_train = []\n",
+    "for folder in  os.listdir(trainpath +'Train') : \n",
+    "    files = gb.glob(pathname= str( trainpath +'Train//' + folder + '/*.jpg'))\n",
+    "    for file in files: \n",
+    "        image = cv2.imread(file)\n",
+    "        image_array = cv2.resize(image , (Size ,Size))\n",
+    "        X_train.append(list(image_array))\n",
+    "        y_train.append(code[folder])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "ed9c9ef1",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-09-08T02:18:25.733929Z",
+     "iopub.status.busy": "2023-09-08T02:18:25.732975Z",
+     "iopub.status.idle": "2023-09-08T02:18:25.739041Z",
+     "shell.execute_reply": "2023-09-08T02:18:25.738035Z",
+     "shell.execute_reply.started": "2023-09-08T02:18:25.733896Z"
+    },
+    "papermill": {
+     "duration": null,
+     "end_time": null,
+     "exception": null,
+     "start_time": null,
+     "status": "pending"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "print(f'we have {len(X_train)} items in X_train')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "1bcbf47d",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-09-08T02:18:25.741260Z",
+     "iopub.status.busy": "2023-09-08T02:18:25.740558Z",
+     "iopub.status.idle": "2023-09-08T02:18:28.700865Z",
+     "shell.execute_reply": "2023-09-08T02:18:28.699572Z",
+     "shell.execute_reply.started": "2023-09-08T02:18:25.741230Z"
+    },
+    "papermill": {
+     "duration": null,
+     "end_time": null,
+     "exception": null,
+     "start_time": null,
+     "status": "pending"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "plt.figure(figsize=(10,10))\n",
+    "for n , i in enumerate(list(np.random.randint(0,len(X_train),16))) : \n",
+    "    plt.subplot(4,4,n+1)\n",
+    "    plt.imshow(X_train[i])   \n",
+    "    plt.axis('off')\n",
+    "    plt.title(getcode(y_train[i]))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "54ed0531",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-09-08T02:18:28.703001Z",
+     "iopub.status.busy": "2023-09-08T02:18:28.702543Z",
+     "iopub.status.idle": "2023-09-08T02:18:41.181047Z",
+     "shell.execute_reply": "2023-09-08T02:18:41.179616Z",
+     "shell.execute_reply.started": "2023-09-08T02:18:28.702965Z"
+    },
+    "papermill": {
+     "duration": null,
+     "end_time": null,
+     "exception": null,
+     "start_time": null,
+     "status": "pending"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "X_test = []\n",
+    "y_test = []\n",
+    "for folder in  os.listdir(testpath +'Test') : \n",
+    "    files = gb.glob(pathname= str(testpath + 'Test//' + folder + '/*.jpg'))\n",
+    "    for file in files: \n",
+    "        image = cv2.imread(file)\n",
+    "        image_array = cv2.resize(image , (Size,Size))\n",
+    "        X_test.append(list(image_array))\n",
+    "        y_test.append(code[folder])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "f98e2d55",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-09-08T02:18:41.186304Z",
+     "iopub.status.busy": "2023-09-08T02:18:41.182434Z",
+     "iopub.status.idle": "2023-09-08T02:18:41.192624Z",
+     "shell.execute_reply": "2023-09-08T02:18:41.191580Z",
+     "shell.execute_reply.started": "2023-09-08T02:18:41.186264Z"
+    },
+    "papermill": {
+     "duration": null,
+     "end_time": null,
+     "exception": null,
+     "start_time": null,
+     "status": "pending"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "print(f'we have {len(X_test)} items in X_test')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "bd24615f",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-09-08T02:18:41.194255Z",
+     "iopub.status.busy": "2023-09-08T02:18:41.193886Z",
+     "iopub.status.idle": "2023-09-08T02:18:44.068170Z",
+     "shell.execute_reply": "2023-09-08T02:18:44.067206Z",
+     "shell.execute_reply.started": "2023-09-08T02:18:41.194223Z"
+    },
+    "papermill": {
+     "duration": null,
+     "end_time": null,
+     "exception": null,
+     "start_time": null,
+     "status": "pending"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "plt.figure(figsize=(10,10))\n",
+    "for n , i in enumerate(list(np.random.randint(0,len(X_test),16))) : \n",
+    "    plt.subplot(4,4,n+1)\n",
+    "    plt.imshow(X_test[i])    \n",
+    "    plt.axis('off')\n",
+    "    plt.title(getcode(y_test[i]))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "aa3b5aab",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-09-08T02:18:44.070428Z",
+     "iopub.status.busy": "2023-09-08T02:18:44.069794Z",
+     "iopub.status.idle": "2023-09-08T02:18:44.833524Z",
+     "shell.execute_reply": "2023-09-08T02:18:44.832289Z",
+     "shell.execute_reply.started": "2023-09-08T02:18:44.070393Z"
+    },
+    "papermill": {
+     "duration": null,
+     "end_time": null,
+     "exception": null,
+     "start_time": null,
+     "status": "pending"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "X_train = np.array(X_train)\n",
+    "X_test = np.array(X_test)\n",
+    "\n",
+    "y_train = np.array(y_train)\n",
+    "y_test = np.array(y_test)\n",
+    "\n",
+    "print(f'X_train shape  is {X_train.shape}')\n",
+    "print(f'X_test shape  is {X_test.shape}')\n",
+    "\n",
+    "print(f'y_train shape  is {y_train.shape}')\n",
+    "print(f'y_test shape  is {y_test.shape}')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c4bb8291",
+   "metadata": {
+    "papermill": {
+     "duration": null,
+     "end_time": null,
+     "exception": null,
+     "start_time": null,
+     "status": "pending"
+    },
+    "tags": []
+   },
+   "source": [
+    "# CNN Model****"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "8964c7ee",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-09-08T02:18:44.835474Z",
+     "iopub.status.busy": "2023-09-08T02:18:44.835106Z",
+     "iopub.status.idle": "2023-09-08T02:18:45.032479Z",
+     "shell.execute_reply": "2023-09-08T02:18:45.031209Z",
+     "shell.execute_reply.started": "2023-09-08T02:18:44.835443Z"
+    },
+    "papermill": {
+     "duration": null,
+     "end_time": null,
+     "exception": null,
+     "start_time": null,
+     "status": "pending"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "\n",
+    "Mod = tf.keras.models.Sequential([\n",
+    "\n",
+    "  layers.Conv2D(filters=16,kernel_size=3,activation='relu',input_shape=(100,100,3)),\n",
+    "  layers.MaxPooling2D(pool_size=2),\n",
+    "\n",
+    "  layers.Conv2D(filters=32,kernel_size=3,activation='relu',padding='same'),\n",
+    "  layers.MaxPooling2D(pool_size=2),\n",
+    "  layers.BatchNormalization(),\n",
+    "  layers.Dropout(0.5),\n",
+    "\n",
+    "  layers.Conv2D(filters=64,kernel_size=3,activation='relu'),\n",
+    "  layers.MaxPooling2D(pool_size=2),\n",
+    "  layers.BatchNormalization(),\n",
+    "  layers.Dropout(0.2),\n",
+    "\n",
+    "  layers.Conv2D(filters=128,kernel_size=3,activation='relu'),\n",
+    "  layers.MaxPooling2D(pool_size=2),\n",
+    "  layers.BatchNormalization(),\n",
+    "  layers.Dropout(0.25),\n",
+    "\n",
+    "  layers.Flatten(),\n",
+    "\n",
+    "  layers.Dense(units=128,activation='relu'),\n",
+    "  layers.BatchNormalization(),\n",
+    "  layers.Dropout(0.25),\n",
+    "\n",
+    "  layers.Dense(units=6,activation='softmax')\n",
+    "])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "1b307976",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-09-08T02:18:45.034534Z",
+     "iopub.status.busy": "2023-09-08T02:18:45.034162Z",
+     "iopub.status.idle": "2023-09-08T02:18:45.040939Z",
+     "shell.execute_reply": "2023-09-08T02:18:45.039526Z",
+     "shell.execute_reply.started": "2023-09-08T02:18:45.034503Z"
+    },
+    "papermill": {
+     "duration": null,
+     "end_time": null,
+     "exception": null,
+     "start_time": null,
+     "status": "pending"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "train_datagen = ImageDataGenerator(rescale = 1./255.,rotation_range = 40, width_shift_range = 0.2, height_shift_range = 0.2, shear_range = 0.2, zoom_range = 0.2, horizontal_flip = True)\n",
+    "\n",
+    "\n",
+    "test_datagen = ImageDataGenerator( rescale = 1.0/255. )"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "b0feb762",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-09-08T02:18:45.043678Z",
+     "iopub.status.busy": "2023-09-08T02:18:45.042519Z",
+     "iopub.status.idle": "2023-09-08T02:18:46.219920Z",
+     "shell.execute_reply": "2023-09-08T02:18:46.218568Z",
+     "shell.execute_reply.started": "2023-09-08T02:18:45.043646Z"
+    },
+    "papermill": {
+     "duration": null,
+     "end_time": null,
+     "exception": null,
+     "start_time": null,
+     "status": "pending"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "train_generator = train_datagen.flow_from_directory(trainpath, batch_size = 20, class_mode = 'binary', target_size = (224, 224))\n",
+    "\n",
+    "validation_generator = test_datagen.flow_from_directory( validationpath,  batch_size = 20, class_mode = 'binary', target_size = (224, 224))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a62b4349",
+   "metadata": {
+    "papermill": {
+     "duration": null,
+     "end_time": null,
+     "exception": null,
+     "start_time": null,
+     "status": "pending"
+    },
+    "tags": []
+   },
+   "source": [
+    "# Training model ****"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "c36baa10",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-09-08T02:18:46.224245Z",
+     "iopub.status.busy": "2023-09-08T02:18:46.223725Z",
+     "iopub.status.idle": "2023-09-08T02:18:46.308771Z",
+     "shell.execute_reply": "2023-09-08T02:18:46.306885Z",
+     "shell.execute_reply.started": "2023-09-08T02:18:46.224200Z"
+    },
+    "papermill": {
+     "duration": null,
+     "end_time": null,
+     "exception": null,
+     "start_time": null,
+     "status": "pending"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "epochs = 50\n",
+    "ThisModel = Mod.fit(X_train, y_train, epochs=epochs,batch_size=128,verbose=1)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0399eb2e",
+   "metadata": {
+    "papermill": {
+     "duration": null,
+     "end_time": null,
+     "exception": null,
+     "start_time": null,
+     "status": "pending"
+    },
+    "tags": []
+   },
+   "source": [
+    "# Accuracy ****"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "90dc2f22",
+   "metadata": {
+    "execution": {
+     "iopub.status.busy": "2023-09-08T02:18:46.310383Z",
+     "iopub.status.idle": "2023-09-08T02:18:46.311005Z",
+     "shell.execute_reply": "2023-09-08T02:18:46.310726Z",
+     "shell.execute_reply.started": "2023-09-08T02:18:46.310701Z"
+    },
+    "papermill": {
+     "duration": null,
+     "end_time": null,
+     "exception": null,
+     "start_time": null,
+     "status": "pending"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "Mod.evaluate(X_test, y_test)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "54e8d9b4",
+   "metadata": {
+    "execution": {
+     "iopub.status.busy": "2023-09-08T02:18:46.312943Z",
+     "iopub.status.idle": "2023-09-08T02:18:46.313463Z",
+     "shell.execute_reply": "2023-09-08T02:18:46.313217Z",
+     "shell.execute_reply.started": "2023-09-08T02:18:46.313192Z"
+    },
+    "papermill": {
+     "duration": null,
+     "end_time": null,
+     "exception": null,
+     "start_time": null,
+     "status": "pending"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "Mod.compile(optimizer=Adam(learning_rate=0.001), loss='binary_crossentropy', metrics=['accuracy'])\n",
+    "\n",
+    "history2= Mod.fit(train_generator, epochs=5, validation_data=validation_generator)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "0de59d44",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-09-08T02:20:16.818437Z",
+     "iopub.status.busy": "2023-09-08T02:20:16.817981Z",
+     "iopub.status.idle": "2023-09-08T02:20:16.872514Z",
+     "shell.execute_reply": "2023-09-08T02:20:16.870759Z",
+     "shell.execute_reply.started": "2023-09-08T02:20:16.818401Z"
+    },
+    "papermill": {
+     "duration": null,
+     "end_time": null,
+     "exception": null,
+     "start_time": null,
+     "status": "pending"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "# loss\n",
+    "plt.plot(history2.history['loss'], label='train loss')\n",
+    "plt.plot(history2.history['val_loss'], label='val loss')\n",
+    "plt.legend()\n",
+    "plt.show()\n",
+    "plt.savefig('LossVal_loss')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "82b3f7ea",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-09-08T02:20:20.241151Z",
+     "iopub.status.busy": "2023-09-08T02:20:20.240358Z",
+     "iopub.status.idle": "2023-09-08T02:20:20.294400Z",
+     "shell.execute_reply": "2023-09-08T02:20:20.292368Z",
+     "shell.execute_reply.started": "2023-09-08T02:20:20.241109Z"
+    },
+    "papermill": {
+     "duration": null,
+     "end_time": null,
+     "exception": null,
+     "start_time": null,
+     "status": "pending"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "#accuracy\n",
+    "plt.plot(history2.history['accuracy'], label='train acc')\n",
+    "plt.plot(history2.history['val_accuracy'], label='val acc')\n",
+    "plt.legend()\n",
+    "plt.show()\n",
+    "plt.savefig('AccVal_acc')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "f7883c8e",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-09-08T02:20:43.361859Z",
+     "iopub.status.busy": "2023-09-08T02:20:43.361373Z",
+     "iopub.status.idle": "2023-09-08T02:20:44.933226Z",
+     "shell.execute_reply": "2023-09-08T02:20:44.930918Z",
+     "shell.execute_reply.started": "2023-09-08T02:20:43.361792Z"
+    },
+    "papermill": {
+     "duration": null,
+     "end_time": null,
+     "exception": null,
+     "start_time": null,
+     "status": "pending"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "#confusion matrix\n",
+    "y_true = validation_generator.classes\n",
+    "\n",
+    "y_pred = Mod.predict(validation_generator)\n",
+    "predicted_classes = np.argmax(y_pred, axis=1)\n",
+    "\n",
+    "from sklearn import metrics\n",
+    "cm = metrics.confusion_matrix(y_true, predicted_classes)\n",
+    "plt.figure(figsize=(8, 6))\n",
+    "metrics.ConfusionMatrixDisplay(cm, display_labels=['Seat_Belt', 'WithoutSeat_Belt']).plot(cmap='Blues', values_format='d')\n",
+    "plt.title('Confusion Matrix')\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "d8ec4179",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-09-08T02:20:08.236144Z",
+     "iopub.status.busy": "2023-09-08T02:20:08.235664Z",
+     "iopub.status.idle": "2023-09-08T02:20:08.291191Z",
+     "shell.execute_reply": "2023-09-08T02:20:08.289617Z",
+     "shell.execute_reply.started": "2023-09-08T02:20:08.236108Z"
+    },
+    "papermill": {
+     "duration": null,
+     "end_time": null,
+     "exception": null,
+     "start_time": null,
+     "status": "pending"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "#classification report\n",
+    "class_labels = list(validation_generator.class_indices.keys())\n",
+    "report = metrics.classification_report(y_true, predicted_classes, target_names=class_labels, zero_division=1)\n",
+    "print(report)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "daaf84b9",
+   "metadata": {
+    "papermill": {
+     "duration": null,
+     "end_time": null,
+     "exception": null,
+     "start_time": null,
+     "status": "pending"
+    },
+    "tags": []
+   },
+   "source": [
+    "# Save Model ****"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "1f44e241",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-09-08T02:20:04.032300Z",
+     "iopub.status.busy": "2023-09-08T02:20:04.031757Z",
+     "iopub.status.idle": "2023-09-08T02:20:04.103593Z",
+     "shell.execute_reply": "2023-09-08T02:20:04.102146Z",
+     "shell.execute_reply.started": "2023-09-08T02:20:04.032253Z"
+    },
+    "papermill": {
+     "duration": null,
+     "end_time": null,
+     "exception": null,
+     "start_time": null,
+     "status": "pending"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "Mod.summary()"
+   ]
+  }
+ ],
+ "kernelspec": {
+  "display_name": "Python 3",
+  "language": "python",
+  "name": "python3"
+ },
+ "language_info": {
+  "codemirror_mode": {
+   "name": "ipython",
+   "version": 3
+  },
+  "file_extension": ".py",
+  "mimetype": "text/x-python",
+  "name": "python",
+  "nbconvert_exporter": "python",
+  "pygments_lexer": "ipython3",
+  "version": "3.6.4"
+ },
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.12"
+  },
+  "papermill": {
+   "default_parameters": {},
+   "duration": 33.472401,
+   "end_time": "2023-09-08T02:21:47.807079",
+   "environment_variables": {},
+   "exception": true,
+   "input_path": "__notebook__.ipynb",
+   "output_path": "__notebook__.ipynb",
+   "parameters": {},
+   "start_time": "2023-09-08T02:21:14.334678",
+   "version": "2.4.0"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
